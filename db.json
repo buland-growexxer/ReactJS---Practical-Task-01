@@ -20,11 +20,11 @@
       "category": "Electronics",
       "price": 999.99,
       "rating": 4.5,
-      "stock": 50,
+      "stock": "51",
       "brand": "TechPro",
       "isAvailable": true,
       "createdAt": "2024-05-23T08:56:21.619Z",
-      "updatedAt": "2024-05-23T08:56:21.619Z"
+      "updatedAt": "2025-04-02T09:05:43.818Z"
     },
     {
       "id": 3,
@@ -145,9 +145,3 @@
     }
   ]
 }
-
-
-
-
-
-

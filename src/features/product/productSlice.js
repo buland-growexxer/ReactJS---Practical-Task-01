@@ -27,12 +27,18 @@ export const addProduct = createAsyncThunk(
 export const updateProduct = createAsyncThunk(
   "products/updateProduct",
   async ({ id, product }) => {
+    // Add updatedAt field to the product data
+    const updatedProduct = {
+      ...product,
+      updatedAt: new Date().toISOString(),
+    };
+
     const response = await fetch(`http://localhost:3000/products/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(product),
+      body: JSON.stringify(updatedProduct),
     });
     return response.json();
   }
