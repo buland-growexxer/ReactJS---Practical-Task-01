@@ -129,19 +129,6 @@
       "isAvailable": true,
       "createdAt": "2024-05-23T08:56:21.627Z",
       "updatedAt": "2024-05-23T08:56:21.627Z"
-    },
-    {
-      "id": 11,
-      "title": "Smart TV",
-      "description": "4K Smart TV with built-in streaming apps",
-      "category": "Electronics",
-      "price": 799.99,
-      "rating": 4.7,
-      "stock": 20,
-      "brand": "TechPro",
-      "isAvailable": true,
-      "createdAt": "2024-05-23T08:56:21.628Z",
-      "updatedAt": "2024-05-23T08:56:21.628Z"
     }
   ]
 }

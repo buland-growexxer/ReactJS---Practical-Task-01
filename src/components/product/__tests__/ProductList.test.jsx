@@ -3,7 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import ProductList from '../ProductList';
-import productReducer from '../../../features/product/productSlice';
+import productReducer, { fetchProducts } from '../../../features/product/productSlice';
 
 // Mock the fetch function
 global.fetch = vi.fn();
@@ -104,28 +104,46 @@ describe('ProductList Component', () => {
   });
 
   it('shows error state', async () => {
-    const errorMessage = 'Failed to fetch products';
+    const errorMessage = 'Failed to fetch';
+    console.log('Starting error state test');
+    
+    // Mock fetch to reject with an error for both the total items and products fetch
+    global.fetch
+      .mockRejectedValueOnce(new Error(errorMessage))  // For total items
+      .mockRejectedValueOnce(new Error(errorMessage)); // For products
+
+    // Create store with initial state
     const store = createMockStore({
       items: [],
-      status: 'failed',
-      error: errorMessage,
+      status: 'idle',
+      error: null,
       currentPage: 1,
     });
 
+    console.log('Initial store state:', store.getState().products);
+
+    // Render the component
     render(
       <Provider store={store}>
         <ProductList />
       </Provider>
     );
 
-    // Wait for error message to be rendered
-    await waitFor(() => {
-      // Look for error message in a more flexible way
-      const errorElement = screen.getByText((content) => 
-        content.includes('Error') && content.includes(errorMessage)
-      );
-      expect(errorElement).toBeInTheDocument();
-    }, { timeout: 3000 });
+    console.log('Component rendered, waiting for error message...');
+
+    // Wait for the error message to be rendered
+    const errorElement = await screen.findByTestId('error-message', { timeout: 3000 });
+    console.log('Found error element:', errorElement?.textContent);
+
+    // Verify the error state
+    expect(errorElement).toBeInTheDocument();
+    expect(errorElement).toHaveTextContent(`Error: ${errorMessage}`);
+
+    // Verify the Redux state
+    const finalState = store.getState().products;
+    console.log('Final Redux state:', finalState);
+    expect(finalState.status).toBe('failed');
+    expect(finalState.error).toBe(errorMessage);
   });
 
   it('opens add product modal when clicking add button', async () => {
@@ -188,15 +206,16 @@ describe('ProductList Component', () => {
       // Check the modal title
       expect(screen.getByText('Product Details')).toBeInTheDocument();
       
-      // Check the product details
-      expect(screen.getByText('Test Product 1')).toBeInTheDocument();
-      expect(screen.getByText('Test Description 1')).toBeInTheDocument();
-      expect(screen.getByText('Test Category')).toBeInTheDocument();
-      expect(screen.getByText('Test Brand')).toBeInTheDocument();
-      expect(screen.getByText('$99.99')).toBeInTheDocument();
-      expect(screen.getByText('4.5/5')).toBeInTheDocument();
-      expect(screen.getByText('10 units')).toBeInTheDocument();
-      expect(screen.getByText('Available')).toBeInTheDocument();
+      // Check the product details in the modal
+      const modalContent = modalContainer.querySelector('.bg-white');
+      expect(modalContent).toHaveTextContent('Test Product 1');
+      expect(modalContent).toHaveTextContent('Test Description 1');
+      expect(modalContent).toHaveTextContent('Test Category');
+      expect(modalContent).toHaveTextContent('Test Brand');
+      expect(modalContent).toHaveTextContent('$99.99');
+      expect(modalContent).toHaveTextContent('4.5/5');
+      expect(modalContent).toHaveTextContent('10 units');
+      expect(modalContent).toHaveTextContent('Available');
     }, { timeout: 3000 });
   });
 }); 

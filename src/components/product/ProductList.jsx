@@ -17,9 +17,13 @@ const ProductList = () => {
   const [modalMode, setModalMode] = useState('add');
   const [totalItems, setTotalItems] = useState(0);
 
+  // Add debug logs for state changes
+  console.log('ProductList render:', { status, error, itemsLength: items.length });
+
   useEffect(() => {
     const fetchData = async () => {
       try {
+        console.log('Fetching total items...');
         const response = await fetch('http://localhost:3000/products');
         const data = await response.json();
         setTotalItems(data.length);
@@ -31,6 +35,7 @@ const ProductList = () => {
   }, []);
 
   useEffect(() => {
+    console.log('Fetching products for page:', currentPage);
     const start = (currentPage - 1) * ITEMS_PER_PAGE;
     const end = start + ITEMS_PER_PAGE;
     dispatch(fetchProducts({ start, end }));
@@ -133,13 +138,16 @@ const ProductList = () => {
   };
 
   if (status === 'loading') {
+    console.log('Rendering loading state');
     return <div className="text-center">Loading...</div>;
   }
 
   if (error) {
-    return <div className="text-center text-red-500">Error: {error}</div>;
+    console.log('Rendering error state:', error);
+    return <div className="text-center text-red-500" data-testid="error-message">Error: {error}</div>;
   }
 
+  console.log('Rendering product list');
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-6 flex justify-between items-center">
